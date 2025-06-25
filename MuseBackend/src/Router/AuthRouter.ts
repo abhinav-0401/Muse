@@ -18,14 +18,23 @@ const users = new Map<string, User>();
 const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
 authRouter.post("/num", async (req, res) => {
-  const accessToken: string = req.body.accessToken;
+  const accessToken = req.get("Authorization")?.split(" ")[1];
+
+  if (!accessToken) {
+    res.sendStatus(400);
+    return;
+  }
 
   jwt.verify(
     accessToken,
     process.env.ACCESS_TOKEN_SECRET as string,
-    (err, decoded) => {
+    (err, _) => {
       if (err) {
+        res.sendStatus(401);
+        return;
       }
+
+      res.status(200).json(numbers);
     }
   );
 });
@@ -33,6 +42,8 @@ authRouter.post("/num", async (req, res) => {
 authRouter.post("/auth/signup", async (req, res) => {
   const username: string = req.body.username;
   const password: string = req.body.password;
+
+  console.log(req.cookies);
 
   if (users.has(username)) {
     res.sendStatus(409);
@@ -105,7 +116,7 @@ function getAccessToken(refreshToken: string): Promise<string | null> {
         const accessToken = jwt.sign(
           { username: user.username },
           process.env.ACCESS_TOKEN_SECRET as string,
-          { expiresIn: 15 }
+          { expiresIn: 60 }
         );
         resolve(accessToken);
       }
