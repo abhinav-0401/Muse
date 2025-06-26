@@ -1,9 +1,11 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="grid grid-cols-1 grid-rows-[auto_1fr] md:grid-cols-[200px_1fr] md:grid-rows-[auto_1fr_auto] min-h-screen ">
-    <nav class="col-span-full p-4 h-16">this is the navbar</nav>
-    <aside class="sidebar-menu row-start-2 -row-end-1 bg-slate-400 opacity-50 top-16 fixed hidden md:static md:block">this is the sidebar</aside>
-    <main class="col-start-2 -col-end-1 row-start-2 -row-end-1 p-16">
+<div class="grid grid-cols-1 grid-rows-[auto_1fr] lg:grid-cols-[300px_1fr] lg:grid-rows-[auto_1fr_auto] min-h-screen">
+    <NavMenu />
+    <aside class="sidebar-menu lg:row-start-2 lg:-row-end-1 bg-timberwolf top-16 fixed hidden lg:static lg:block shadow-lg shadow-black p-8">
+        The sidebar will be functional soon
+    </aside>
+    <main class="col-span-full lg:col-start-2 lg:-col-end-1 lg:row-start-2 lg:-row-end-1 bg-linen p-16">
         @Body
     </main>
 </div>

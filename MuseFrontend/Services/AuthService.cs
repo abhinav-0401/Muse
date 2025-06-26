@@ -3,20 +3,21 @@ using System.Text.Json;
 using System.Net;
 using Microsoft.JSInterop;
 using MuseFrontend.Models;
+using Microsoft.AspNetCore.Components;
 
 namespace MuseFrontend.Services;
 
 public class AuthService
 {
-
     private HttpClient _http = default!;
-
     private IJSRuntime _jsRuntime = default!;
+    private NavigationManager _navigation = default!;
 
-    public AuthService(HttpClient http, IJSRuntime jsRuntime)
+    public AuthService(HttpClient http, IJSRuntime jsRuntime, NavigationManager navigation)
     {
         _http = http;
         _jsRuntime = jsRuntime;
+        _navigation = navigation;
     }
 
     public async Task SignupUser(User user)
@@ -70,6 +71,16 @@ public class AuthService
             await _jsRuntime.InvokeVoidAsync("Muse.WriteCookie", "accessToken", authRes.AccessToken, 60);
             var accessTokenCookie = await _jsRuntime.InvokeAsync<string>("Muse.ReadCookie", "accessToken");
             Console.WriteLine("Cookie is: {0}", accessTokenCookie);
+        }
+    }
+
+    public async Task VerifyAuth()
+    {
+        var accessToken = await _jsRuntime.InvokeAsync<string?>("Muse.ReadCookie", "accessToken");
+        if (string.IsNullOrEmpty(accessToken))
+        {
+            _navigation.NavigateTo("/auth/login");
+            return;
         }
     }
 }
