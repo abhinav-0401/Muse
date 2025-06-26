@@ -17,6 +17,6 @@ public partial class Home
             Username = "Abhinav",
             Password = "12345",
         };
-        await ApiService.AuthService.SignupUser(user);
+        // await ApiService.AuthService.SignupUser(user);
     }
 }

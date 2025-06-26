@@ -5,3 +5,28 @@
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+<Markdown Value="@markdownValue" ValueChanged="@OnMarkdownValueChanged" />
+
+<h1>This is the string:</h1>
+<br />@markdownValue
+
+@code{
+    string markdownValue = "# EasyMDE \n Go ahead, play around with the editor! Be sure to check out **bold**, *italic*, [links](https://google.com) and all the other features. You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.";
+
+    @* string markdownHtml; *@
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    Task OnMarkdownValueChanged( string value )
+    {
+        markdownValue = value;
+
+        @* markdownHtml = Markdig.Markdown.ToHtml( markdownValue ?? string.Empty ); *@
+
+        return Task.CompletedTask;
+    }
+}
