@@ -12,7 +12,7 @@ public partial class Home
 
     protected override async Task OnInitializedAsync()
     {
-        var user = new User
+        var user = new AuthUser
         {
             Username = "Abhinav",
             Password = "12345",
