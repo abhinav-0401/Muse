@@ -1,0 +1,33 @@
+@using MuseFrontend.Models
+@using MuseFrontend.Services
+@inject ApiService ApiService
+
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage LocalStorage
+
+@page "/auth/signup"
+
+This is the signup page
+
+<br /><input @bind="_authUser.Username" @bind:event="oninput" type="text" />
+<br /><input @bind="_authUser.Password" @bind:event="oninput" type="password" />
+<br />
+<br />
+    <button 
+        class="bg-cyan-300 hover:bg-cyan-200 px-2 py-1 rounded-md"
+        @onclick="SignupHandler"
+    >
+        Login
+    </button>
+
+@code
+{
+    private AuthUser _authUser = new();
+    [Inject]
+    private ProtectedLocalStorage ls { get; set; } = default!;
+
+    private async Task SignupHandler()
+    {
+        await ApiService.AuthService.SignupUser(_authUser);
+    }
+}

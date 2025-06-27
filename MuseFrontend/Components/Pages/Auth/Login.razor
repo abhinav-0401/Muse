@@ -1,0 +1,29 @@
+@using MuseFrontend.Models
+@using MuseFrontend.Services
+
+@page "/auth/login"
+
+This is the login page
+
+<br /><input @bind="_authUser.Username" @bind:event="oninput" type="text" />
+<br /><input @bind="_authUser.Password" @bind:event="oninput" type="password" />
+<br />
+<br />
+    <button 
+        class="bg-cyan-300 hover:bg-cyan-200 px-2 py-1 rounded-md"
+        @onclick="LoginHandler"
+    >
+        Login
+    </button>
+
+@code
+{
+    private AuthUser _authUser = new();
+    [Inject]
+    private ApiService ApiService { get; set; }
+
+    private async Task LoginHandler()
+    {
+        await ApiService.AuthService.LoginUser(_authUser);
+    }
+}
