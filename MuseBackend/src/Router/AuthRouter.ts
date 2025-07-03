@@ -1,13 +1,19 @@
 import express from "express";
-import AuthController, { User } from "../Controllers/AuthControllers.js";
-import { InMemoryDbService } from "../Services/DbService.js";
+import AuthController from "../Controllers/AuthControllers.js";
+import { MongoUserRepo } from "../Repositories/UserRepo.js";
 
 const authRouter = express.Router();
 
-const authController = new AuthController(new InMemoryDbService<User>());
+const authController = new AuthController(new MongoUserRepo());
 
-authRouter.post("/auth/signup", authController.signupController);
-authRouter.post("/auth/login", authController.loginController);
-authRouter.post("/auth/access-token", authController.accessTokenController);
+authRouter.post("/auth/signup", (req, res) =>
+  authController.signupController(req, res)
+);
+authRouter.post("/auth/login", (req, res) =>
+  authController.loginController(req, res)
+);
+authRouter.post("/auth/access-token", (req, res) =>
+  authController.accessTokenController(req, res)
+);
 
 export default authRouter;

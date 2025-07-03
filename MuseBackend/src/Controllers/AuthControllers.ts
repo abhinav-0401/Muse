@@ -1,27 +1,14 @@
 import type { Request, Response } from "express";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
-import { IDbService } from "../Services/DbService.js";
-
-export interface User {
-  username: string;
-  password: string;
-}
+import { IUserRepo, User } from "../Repositories/UserRepo.js";
 
 interface DecodedPayload {
   username: string;
 }
 
-// this is just for quick testing
-const users = new Map<string, User>();
-const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-
 export default class AuthController {
-  private _dbService: IDbService<User>;
-
-  constructor(dbService: IDbService<User>) {
-    this._dbService = dbService;
-  }
+  constructor(private _userRepo: IUserRepo) {}
 
   async signupController(req: Request, res: Response): Promise<void> {
     const username: string = req.body.username;
@@ -29,44 +16,48 @@ export default class AuthController {
 
     console.log(req.cookies);
 
-    if (this._dbService.has(username)) {
+    if (await this._userRepo.findByUsername(username)) {
       res.sendStatus(409);
       return;
     }
 
     const user: User = { username, password };
-    // users.set(username, user);
-    this._dbService.set(username, user);
+    const result = await this._userRepo.createUser(user);
+    if (!result) {
+      res.sendStatus(500);
+      return;
+    }
 
     // give access and refresh tokens
     const refreshToken = getRefreshToken(username);
     const accessToken = (await getAccessToken(refreshToken)) as string;
 
-    res.status(200).json({ username, accessToken, refreshToken });
+    res
+      .status(200)
+      .json({ username, accessToken, refreshToken, id: result._id });
   }
 
   async loginController(req: Request, res: Response): Promise<void> {
     const username: string = req.body.username;
     const password: string = req.body.password;
 
-    if (!this._dbService.has(username)) {
+    const user = await this._userRepo.findByUsername(username);
+    if (!user) {
       res.sendStatus(404);
       return;
     }
 
-    if (this._dbService.has(username)) {
-      // const user = users.get(username);
-      const user = this._dbService.get(username);
-      if (password !== user?.password) {
-        res.status(404).send("Incorrect password");
-        return;
-      } else if (password === user?.password) {
-        const refreshToken = getRefreshToken(username);
-        const accessToken = await getAccessToken(refreshToken);
+    if (password !== user?.password) {
+      res.status(404).send("Incorrect password");
+      return;
+    } else if (password === user?.password) {
+      const refreshToken = getRefreshToken(username);
+      const accessToken = await getAccessToken(refreshToken);
 
-        res.status(200).json({ username, accessToken, refreshToken });
-        return;
-      }
+      res
+        .status(200)
+        .json({ id: user._id, username, accessToken, refreshToken });
+      return;
     }
   }
 
