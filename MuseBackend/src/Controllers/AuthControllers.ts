@@ -5,12 +5,13 @@ import { IUserRepo, User } from "../Repositories/UserRepo.js";
 
 interface DecodedPayload {
   username: string;
+  _id: string;
 }
 
 export default class AuthController {
   constructor(private _userRepo: IUserRepo) {}
 
-  async signupController(req: Request, res: Response): Promise<void> {
+  public async signupController(req: Request, res: Response): Promise<void> {
     const username: string = req.body.username;
     const password: string = req.body.password;
 
@@ -29,7 +30,7 @@ export default class AuthController {
     }
 
     // give access and refresh tokens
-    const refreshToken = getRefreshToken(username);
+    const refreshToken = getRefreshToken(user);
     const accessToken = (await getAccessToken(refreshToken)) as string;
 
     res
@@ -37,7 +38,7 @@ export default class AuthController {
       .json({ username, accessToken, refreshToken, id: result._id });
   }
 
-  async loginController(req: Request, res: Response): Promise<void> {
+  public async loginController(req: Request, res: Response): Promise<void> {
     const username: string = req.body.username;
     const password: string = req.body.password;
 
@@ -51,7 +52,7 @@ export default class AuthController {
       res.status(404).send("Incorrect password");
       return;
     } else if (password === user?.password) {
-      const refreshToken = getRefreshToken(username);
+      const refreshToken = getRefreshToken(user);
       const accessToken = await getAccessToken(refreshToken);
 
       res
@@ -61,7 +62,32 @@ export default class AuthController {
     }
   }
 
-  async accessTokenController(req: Request, res: Response): Promise<void> {
+  public async userInfoController(req: Request, res: Response): Promise<void> {
+    const accessToken = req.get("Authentication")?.split(" ")[1];
+    if (!accessToken) {
+      res.sendStatus(400);
+      return;
+    }
+
+    const decoded = await this.verifyAccessToken(accessToken);
+    if (!decoded) {
+      res.sendStatus(400);
+      return;
+    }
+
+    const user = this._userRepo.findById(decoded._id);
+    if (!user) {
+      res.send("couldn't find user");
+      return;
+    }
+
+    res.status(200).json(user);
+  }
+
+  public async accessTokenController(
+    req: Request,
+    res: Response
+  ): Promise<void> {
     const refreshToken: string = req.body.refreshToken;
     const accessToken = await getAccessToken(refreshToken);
 
@@ -78,12 +104,32 @@ export default class AuthController {
       })
       .json({ accessToken, refreshToken });
   }
+
+  private verifyAccessToken(token: string): Promise<DecodedPayload | null> {
+    return new Promise((resolve) => {
+      jwt.verify(
+        token,
+        process.env.ACCESS_TOKEN_SECRET as string,
+        (err, decode) => {
+          if (err || !decode) {
+            return resolve(null);
+          }
+
+          return decode as DecodedPayload;
+        }
+      );
+    });
+  }
 }
 
-export function getRefreshToken(username: string): string {
-  return jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET as string, {
-    expiresIn: "30d",
-  });
+export function getRefreshToken(user: User): string {
+  return jwt.sign(
+    { username: user.username, id: user._id },
+    process.env.REFRESH_TOKEN_SECRET as string,
+    {
+      expiresIn: "30d",
+    }
+  );
 }
 
 export function getAccessToken(refreshToken: string): Promise<string | null> {
@@ -98,7 +144,7 @@ export function getAccessToken(refreshToken: string): Promise<string | null> {
 
         const user = decode as DecodedPayload;
         const accessToken = jwt.sign(
-          { username: user.username },
+          { username: user.username, id: user._id },
           process.env.ACCESS_TOKEN_SECRET as string,
           { expiresIn: 60 }
         );

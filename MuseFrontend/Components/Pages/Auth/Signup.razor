@@ -1,33 +1,22 @@
-@using MuseFrontend.Models
-@using MuseFrontend.Services
-@inject ApiService ApiService
-
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@inject ProtectedLocalStorage LocalStorage
-
 @page "/auth/signup"
 
-This is the signup page
 
-<br /><input @bind="_authUser.Username" @bind:event="oninput" type="text" />
-<br /><input @bind="_authUser.Password" @bind:event="oninput" type="password" />
-<br />
-<br />
-    <button 
-        class="bg-cyan-300 hover:bg-cyan-200 px-2 py-1 rounded-md"
-        @onclick="SignupHandler"
-    >
-        Login
-    </button>
+<div class="min-h-screen bg-linear-to-br from-purple-400 via-fuchsia-300 to-pink-300 flex justify-center items-center">
+    <main class="flex flex-col bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl p-8 w-1/2">
+        <h1 class="flex justify-center text-3xl">Signup</h1>
 
-@code
-{
-    private AuthUser _authUser = new();
-    [Inject]
-    private ProtectedLocalStorage ls { get; set; } = default!;
+        <div class="flex flex-col"> 
+            <label>Username: </label>
+            <input type="text" class="bg-white/30 p-2 rounded-md" @bind="_user.Username" @bind:event="oninput" />
+        </div>
 
-    private async Task SignupHandler()
-    {
-        await ApiService.AuthService.SignupUser(_authUser);
-    }
-}
+        username: @_user.Username
+        
+        <div class="flex flex-col">
+            <label>Password: </label>
+            <input type="password" class="bg-white/30 p-2 rounded-md" @bind="_user.Password" @bind:event="oninput" />
+        </div>
+
+        <span class="flex w-full justify-center mt-4"><BtnPrimary BtnText="Signup" OnClick="SignupHandler" /></span>
+    </main>
+</div>

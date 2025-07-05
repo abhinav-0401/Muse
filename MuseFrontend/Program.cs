@@ -1,7 +1,3 @@
-using Blazorise;
-using Blazorise.Tailwind;
-using Blazorise.Icons.FontAwesome;
-
 using MuseFrontend.Components;
 using MuseFrontend.Services;
 
@@ -18,11 +14,6 @@ builder.Services.AddHttpClient<AuthService>(client =>
 {
     client.BaseAddress = new Uri("http://localhost:4321");
 });
-
-builder.Services
-    .AddBlazorise()
-    .AddTailwindProviders()
-    .AddFontAwesomeIcons();
 
 var app = builder.Build();
 

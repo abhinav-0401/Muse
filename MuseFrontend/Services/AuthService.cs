@@ -5,21 +5,27 @@ using System.IdentityModel.Tokens.Jwt;
 using MuseFrontend.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.JSInterop;
 
 namespace MuseFrontend.Services;
 
 public class AuthService
 {
     private HttpClient _http = default!;
+
     private ProtectedLocalStorage _localStorage = default!;
+
+    private IJSRuntime _jsRuntime = default!;
 
     public AuthService(
         HttpClient http,
-        ProtectedLocalStorage localStorage
+        ProtectedLocalStorage localStorage,
+        IJSRuntime jsRuntime
     )
     {
         _http = http;
         _localStorage = localStorage;
+        _jsRuntime = jsRuntime;
     }
 
     public async Task SignupUser(AuthUser authUser)
@@ -32,12 +38,13 @@ public class AuthService
         if (response.StatusCode == HttpStatusCode.Conflict)
         {
             // user already exists
+            await _jsRuntime.InvokeVoidAsync("alert", "User already exists");
             return;
         }
 
         if (!response.IsSuccessStatusCode)
         {
-            Console.Error.WriteLine("Error signing up user");
+            await _jsRuntime.InvokeVoidAsync("alert", "Error signing up user");
             return;
         }
 
@@ -124,8 +131,11 @@ public class AuthService
     {
         var tokenResult = await _localStorage.GetAsync<string>("accessToken");
 
-        if (!tokenResult.Success)
+        if (!tokenResult.Success) return false;
+
+        if (!IsAccessTokenValid(tokenResult.Value))
         {
+            await _localStorage.DeleteAsync("accessToken");
             return false;
         }
 
@@ -134,8 +144,7 @@ public class AuthService
         var shouldFetchUser = !userResult.Success ||
             !CheckAccessTokenPayload(tokenResult.Value, userResult.Value);
 
-        if (!shouldFetchUser)
-            return true;
+        if (!shouldFetchUser) return true;
 
         var response = await _http.PostAsync(
             "/auth/user",
@@ -162,6 +171,22 @@ public class AuthService
         return true;
     }
 
+    private bool IsAccessTokenValid(string token)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        if (!handler.CanReadToken(token))
+        {
+            Console.Error.WriteLine("Invalid JWT format.");
+            return false;
+        }
+
+
+        var jwtToken = handler.ReadJwtToken(token);
+
+        if (DateTime.UtcNow < jwtToken.ValidTo) return true;
+        return false;
+    }
+
     private bool CheckAccessTokenPayload(string token, string username)
     {
         var handler = new JwtSecurityTokenHandler();
@@ -174,8 +199,7 @@ public class AuthService
 
         var jwtToken = handler.ReadJwtToken(token);
 
-        if (jwtToken.Claims.FirstOrDefault(c => c.Type == "username")?.Value == username)
-            return true;
+        if (jwtToken.Claims.FirstOrDefault(c => c.Type == "username")?.Value == username) return true;
 
         return false;
     }

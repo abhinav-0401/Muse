@@ -15,5 +15,8 @@ authRouter.post("/auth/login", (req, res) =>
 authRouter.post("/auth/access-token", (req, res) =>
   authController.accessTokenController(req, res)
 );
+authRouter.get("/auth/user", (req, res) =>
+  authController.userInfoController(req, res)
+);
 
 export default authRouter;

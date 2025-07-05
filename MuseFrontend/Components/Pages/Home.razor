@@ -4,7 +4,49 @@
 
 @if (_isAuthenticated)
 {
-    <Markdown Value="@_markdownValue" ValueChanged="@OnMarkdownValueChanged" />
-    <h1>This is the string:</h1>
-    <br />@_markdownValue
+    <div class="min-h-screen bg-linear-to-br from-purple-400 via-fuchsia-300 to-pink-300 grid grid-rows-[auto_1fr] lg:grid-cols-[280px_1fr] lg:grid-rows-1 relative overflow-hidden">
+        
+        <MobileNavbar />
+
+        <Sidebar />
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-hidden relative z-10">
+            <div class="h-full grid grid-rows-[auto_1fr]">
+                <Header />
+                
+                <!-- Content Area -->
+                <div class="flex-1 overflow-y-auto">
+                    <div class="max-w-4xl mx-auto px-4 py-8 lg:px-8">
+                        <!-- Featured Post -->
+                        <div class="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl mb-8 overflow-hidden">
+                            <div class="p-8">
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 bg-linear-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center shadow-lg">
+                                            <span class="text-white font-bold">JD</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-semibold">John Doe</p>
+                                            <p class="text-white/60 text-sm">2 hours ago</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Markdown Content with Custom Styling -->
+                                <div class="prose prose-invert prose-lg max-w-none">
+                                    <div class="markdown-content text-white/90">
+                                        <Markdown Value="@_markdownValue" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div> <!-- Content Area -->
+
+            </div>
+        </main>
+
+    </div>
 }
