@@ -5,7 +5,7 @@ using MuseFrontend.Services;
 
 namespace MuseFrontend.Components.Pages.Auth;
 
-public partial class Signup
+public partial class Login
 {
     private AuthUser _user = new();
 
@@ -15,13 +15,14 @@ public partial class Signup
     [Inject]
     private NavigationManager Navigation { get; set; } = default!;
 
-    private async Task SignupHandler(MouseEventArgs e)
+    private async Task LoginHandler(MouseEventArgs e)
     {
-        var isSuccess = await ApiService.AuthService.SignupUser(_user);
+        var isSuccess = await ApiService.AuthService.LoginUser(_user);
         if (!isSuccess) return;
 
         Navigation.NavigateTo("/");
     }
 
-    private void GoToLogin(MouseEventArgs e) => Navigation.NavigateTo("/auth/login");
+    private void GoToSignup(MouseEventArgs e) => Navigation.NavigateTo("/auth/login");
+
 }

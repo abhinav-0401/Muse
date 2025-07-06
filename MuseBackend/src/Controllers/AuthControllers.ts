@@ -2,16 +2,25 @@ import type { Request, Response } from "express";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
 import { IUserRepo, User } from "../Repositories/UserRepo.js";
+import { Types } from "mongoose";
 
 interface DecodedPayload {
   username: string;
-  _id: string;
+  id: string;
+}
+
+interface AuthResponse {
+  id: Types.ObjectId;
+  username: string;
+  accessToken: string;
 }
 
 export default class AuthController {
   constructor(private _userRepo: IUserRepo) {}
 
   public async signupController(req: Request, res: Response): Promise<void> {
+    console.log(req.cookies);
+
     const username: string = req.body.username;
     const password: string = req.body.password;
 
@@ -30,15 +39,17 @@ export default class AuthController {
     }
 
     // give access and refresh tokens
-    const refreshToken = getRefreshToken(user);
+    const refreshToken = getRefreshToken(result);
     const accessToken = (await getAccessToken(refreshToken)) as string;
 
     res
       .status(200)
-      .json({ username, accessToken, refreshToken, id: result._id });
+      .json({ username, accessToken, id: result._id } as AuthResponse);
   }
 
   public async loginController(req: Request, res: Response): Promise<void> {
+    console.log(req.cookies);
+
     const username: string = req.body.username;
     const password: string = req.body.password;
 
@@ -57,12 +68,14 @@ export default class AuthController {
 
       res
         .status(200)
-        .json({ id: user._id, username, accessToken, refreshToken });
+        .cookie("refreshToken", refreshToken, { httpOnly: true })
+        .json({ id: user._id, username, accessToken } as AuthResponse);
       return;
     }
   }
 
   public async userInfoController(req: Request, res: Response): Promise<void> {
+    console.log(req.get("Authentication"));
     const accessToken = req.get("Authentication")?.split(" ")[1];
     if (!accessToken) {
       res.sendStatus(400);
@@ -75,20 +88,26 @@ export default class AuthController {
       return;
     }
 
-    const user = this._userRepo.findById(decoded._id);
+    const user = await this._userRepo.findById(decoded.id);
     if (!user) {
       res.send("couldn't find user");
       return;
     }
 
-    res.status(200).json(user);
+    res.status(200).json({ username: user.username });
   }
 
   public async accessTokenController(
     req: Request,
     res: Response
   ): Promise<void> {
-    const refreshToken: string = req.body.refreshToken;
+    console.log("cookies: ", req.cookies);
+
+    const refreshToken: string = req.cookies.refreshToken;
+    if (!refreshToken) {
+      res.sendStatus(400);
+      return;
+    }
     const accessToken = await getAccessToken(refreshToken);
 
     if (!accessToken) {
@@ -100,9 +119,8 @@ export default class AuthController {
       .status(200)
       .cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        expires: new Date(Date.now() + 9000000),
       })
-      .json({ accessToken, refreshToken });
+      .json({ accessToken });
   }
 
   private verifyAccessToken(token: string): Promise<DecodedPayload | null> {
@@ -115,7 +133,7 @@ export default class AuthController {
             return resolve(null);
           }
 
-          return decode as DecodedPayload;
+          resolve(decode as DecodedPayload);
         }
       );
     });
@@ -124,7 +142,7 @@ export default class AuthController {
 
 export function getRefreshToken(user: User): string {
   return jwt.sign(
-    { username: user.username, id: user._id },
+    { username: user.username, id: user._id?.toString() },
     process.env.REFRESH_TOKEN_SECRET as string,
     {
       expiresIn: "30d",
@@ -144,9 +162,9 @@ export function getAccessToken(refreshToken: string): Promise<string | null> {
 
         const user = decode as DecodedPayload;
         const accessToken = jwt.sign(
-          { username: user.username, id: user._id },
+          { username: user.username, id: user.id },
           process.env.ACCESS_TOKEN_SECRET as string,
-          { expiresIn: 60 }
+          { expiresIn: 20 }
         );
         resolve(accessToken);
       }

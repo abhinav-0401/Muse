@@ -1,0 +1,15 @@
+
+<button
+    @onclick=@OnClick
+    class="px-6 max-w-fit py-3 bg-linear-to-r from-purple-500/70 via-fuchsia-400/70 to-pink-400/70 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 backdrop-blur-sm">
+    @Text
+</button>
+
+@code
+{
+    [Parameter]
+    public string? Text { get; set; } = default;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+}

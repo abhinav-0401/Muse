@@ -28,7 +28,7 @@ public class AuthService
         _jsRuntime = jsRuntime;
     }
 
-    public async Task SignupUser(AuthUser authUser)
+    public async Task<bool> SignupUser(AuthUser authUser)
     {
         var response = await _http.PostAsync(
             "/auth/signup",
@@ -39,20 +39,20 @@ public class AuthService
         {
             // user already exists
             await _jsRuntime.InvokeVoidAsync("alert", "User already exists");
-            return;
+            return false;
         }
 
         if (!response.IsSuccessStatusCode)
         {
             await _jsRuntime.InvokeVoidAsync("alert", "Error signing up user");
-            return;
+            return false;
         }
 
         var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
         if (authResponse is null)
         {
             Console.Error.WriteLine("Error parsing ill formed signup response");
-            return;
+            return false;
         }
         Console.WriteLine(authResponse.AccessToken);
         await _localStorage.SetAsync("accessToken", authResponse.AccessToken);
@@ -61,12 +61,14 @@ public class AuthService
         if (user is null)
         {
             Console.Error.WriteLine("Error parsing ill formed user response");
-            return;
+            return true;
         }
-        await _localStorage.SetAsync("user", user); 
+        await _localStorage.SetAsync("user", user);
+        await _jsRuntime.InvokeVoidAsync("alert", $"{user.Username}'s account has been successfully created");
+        return true;
     }
 
-    public async Task LoginUser(AuthUser authUser)
+    public async Task<bool> LoginUser(AuthUser authUser)
     {
         var response = await _http.PostAsync(
             "/auth/login",
@@ -76,20 +78,22 @@ public class AuthService
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
             // user doesn't exist
-            return;
+            await _jsRuntime.InvokeVoidAsync("alert", "User not found");
+            return false;
         }
 
         if (!response.IsSuccessStatusCode)
         {
             Console.Error.WriteLine("Error logging in user");
-            return;
+            await _jsRuntime.InvokeVoidAsync("alert", "Error logging in user");
+            return false;
         }
 
         var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
         if (authResponse is null)
         {
             Console.Error.WriteLine("Error parsing ill formed login response");
-            return;
+            return false;
         }
 
         Console.WriteLine(authResponse);
@@ -99,9 +103,11 @@ public class AuthService
         if (user is null)
         {
             Console.Error.WriteLine("Error parsing ill formed login response");
-            return;
+            return false;
         }
         await _localStorage.SetAsync("user", user);
+        await _jsRuntime.InvokeVoidAsync("alert", $"{user.Username}'s account has been logged in");
+        return true;
     }
 
     public async Task<User?> GetUserInfoAsync()
@@ -113,16 +119,16 @@ public class AuthService
             return null;
         }
 
-        var response = await _http.PostAsync(
-            "/auth/user",
-            JsonContent.Create(new { AccessToken = token }, null, JsonSerializerOptions.Web)
-        );
+        _http.DefaultRequestHeaders.Add("Authentication", $"Bearer {token.Value}");
+        var response = await _http.GetAsync("/auth/user");
         if (!response.IsSuccessStatusCode)
         {
             Console.Error.WriteLine("Couldn't fetch user details");
             return null;
         }
 
+        var strUser = await response.Content.ReadAsStringAsync();
+        Console.WriteLine("string user GetUserInfoAsyn(): {0}", strUser);
         var user = await response.Content.ReadFromJsonAsync<User>();
         return user;
     }
@@ -133,41 +139,33 @@ public class AuthService
 
         if (!tokenResult.Success) return false;
 
-        if (!IsAccessTokenValid(tokenResult.Value))
+        if (IsAccessTokenValid(tokenResult.Value))
         {
-            await _localStorage.DeleteAsync("accessToken");
+            Console.WriteLine("valid");
+            return true;
+        }
+
+        Console.WriteLine("invalid");
+        await _localStorage.DeleteAsync("accessToken");
+
+        var response = await _http.GetAsync("/auth/access-token");
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+        {
+            await _jsRuntime.InvokeVoidAsync("alert", "Couldn't generate new access token");
             return false;
         }
 
-        var userResult = await _localStorage.GetAsync<string>("user");
-
-        var shouldFetchUser = !userResult.Success ||
-            !CheckAccessTokenPayload(tokenResult.Value, userResult.Value);
-
-        if (!shouldFetchUser) return true;
-
-        var response = await _http.PostAsync(
-            "/auth/user",
-            JsonContent.Create(new { AccessToken = tokenResult.Value }, null, JsonSerializerOptions.Web)
-        );
-
-        if (response.StatusCode == HttpStatusCode.NotFound)
+        var tokenRes = await response.Content.ReadAsStringAsync();
+        Console.WriteLine("IsAuthenticated: {0}", tokenRes); 
+        var token = await response.Content.ReadFromJsonAsync<AccessTokenResponse>();
+        if (token is null)
         {
-            // user doesn't exist
-            await _localStorage.DeleteAsync("accessToken");
+            Console.WriteLine("Error parsing ill formed access token json");
             return false;
         }
 
-        if (response.IsSuccessStatusCode)
-        {
-            var user = await response.Content.ReadFromJsonAsync<User>();
-            if (user is null)
-            {
-                Console.Error.WriteLine("Error parsing malformed user object");
-                return false;
-            }
-            await _localStorage.SetAsync("user", user);
-        }
+        await _localStorage.SetAsync("accessToken", token.AccessToken);
+        Console.WriteLine("new accessToken", token.AccessToken);
         return true;
     }
 
@@ -180,14 +178,13 @@ public class AuthService
             return false;
         }
 
-
         var jwtToken = handler.ReadJwtToken(token);
 
         if (DateTime.UtcNow < jwtToken.ValidTo) return true;
         return false;
     }
 
-    private bool CheckAccessTokenPayload(string token, string username)
+    private bool CheckAccessTokenPayload(string token, User user)
     {
         var handler = new JwtSecurityTokenHandler();
 
@@ -199,7 +196,7 @@ public class AuthService
 
         var jwtToken = handler.ReadJwtToken(token);
 
-        if (jwtToken.Claims.FirstOrDefault(c => c.Type == "username")?.Value == username) return true;
+        if (jwtToken.Claims.FirstOrDefault(c => c.Type == "username")?.Value == user.Username) return true;
 
         return false;
     }

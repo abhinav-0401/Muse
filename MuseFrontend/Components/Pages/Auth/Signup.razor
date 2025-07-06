@@ -17,6 +17,12 @@
             <input type="password" class="bg-white/30 p-2 rounded-md" @bind="_user.Password" @bind:event="oninput" />
         </div>
 
-        <span class="flex w-full justify-center mt-4"><BtnPrimary BtnText="Signup" OnClick="SignupHandler" /></span>
+        <div>
+            <span>Already have an account?
+                <br /><BtnSecondary OnClick="GoToLogin" Text="Login"/>
+            </span>
+        </div>
+
+        <span class="flex w-full justify-center mt-4"><BtnPrimary Text="Signup" OnClick="SignupHandler" /></span>
     </main>
 </div>

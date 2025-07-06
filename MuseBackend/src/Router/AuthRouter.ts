@@ -12,7 +12,7 @@ authRouter.post("/auth/signup", (req, res) =>
 authRouter.post("/auth/login", (req, res) =>
   authController.loginController(req, res)
 );
-authRouter.post("/auth/access-token", (req, res) =>
+authRouter.get("/auth/access-token", (req, res) =>
   authController.accessTokenController(req, res)
 );
 authRouter.get("/auth/user", (req, res) =>
