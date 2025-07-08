@@ -23,5 +23,11 @@ public partial class Signup
         Navigation.NavigateTo("/");
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var isAuth = await ApiService.AuthService.IsAuthenticated();
+        if (isAuth) Navigation.NavigateTo("/");
+    }
+
     private void GoToLogin(MouseEventArgs e) => Navigation.NavigateTo("/auth/login");
 }

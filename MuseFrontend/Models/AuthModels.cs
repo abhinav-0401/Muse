@@ -1,6 +1,6 @@
 namespace MuseFrontend.Models;
 
-public record AuthResponse(string Id, string Username, string AccessToken);
+public record AuthResponse(string Id, string Username, string AccessToken, string RefreshToken);
 
 public record AccessTokenResponse(string AccessToken);
 

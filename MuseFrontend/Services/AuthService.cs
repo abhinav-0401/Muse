@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Net;
 using System.IdentityModel.Tokens.Jwt;
 using MuseFrontend.Models;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.JSInterop;
 
@@ -56,6 +55,7 @@ public class AuthService
         }
         Console.WriteLine(authResponse.AccessToken);
         await _localStorage.SetAsync("accessToken", authResponse.AccessToken);
+        await _localStorage.SetAsync("refreshToken", authResponse.RefreshToken);
 
         var user = await GetUserInfoAsync();
         if (user is null)
@@ -96,8 +96,9 @@ public class AuthService
             return false;
         }
 
-        Console.WriteLine(authResponse);
+        Console.WriteLine("loginResponse: {0}", authResponse);
         await _localStorage.SetAsync("accessToken", authResponse.AccessToken);
+        await _localStorage.SetAsync("refreshToken", authResponse.RefreshToken);
 
         var user = await GetUserInfoAsync();
         if (user is null)
@@ -128,7 +129,7 @@ public class AuthService
         }
 
         var strUser = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("string user GetUserInfoAsyn(): {0}", strUser);
+        Console.WriteLine("string user GetUserInfoAsync(): {0}", strUser);
         var user = await response.Content.ReadFromJsonAsync<User>();
         return user;
     }
@@ -136,10 +137,9 @@ public class AuthService
     public async Task<bool> IsAuthenticated()
     {
         var tokenResult = await _localStorage.GetAsync<string>("accessToken");
-
         if (!tokenResult.Success) return false;
 
-        if (IsAccessTokenValid(tokenResult.Value))
+        if (IsAccessTokenValid(tokenResult.Value!))
         {
             Console.WriteLine("valid");
             return true;
@@ -147,6 +147,12 @@ public class AuthService
 
         Console.WriteLine("invalid");
         await _localStorage.DeleteAsync("accessToken");
+
+        var refreshToken = await _localStorage.GetAsync<string>("refreshToken");
+        if (!refreshToken.Success) return false;
+
+        Console.WriteLine("refreshToken: {0}", refreshToken.Value);
+        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken.Value}");
 
         var response = await _http.GetAsync("/auth/access-token");
         if (response.StatusCode == HttpStatusCode.Forbidden)

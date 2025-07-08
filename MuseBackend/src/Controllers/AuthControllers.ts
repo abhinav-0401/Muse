@@ -13,18 +13,15 @@ interface AuthResponse {
   id: Types.ObjectId;
   username: string;
   accessToken: string;
+  refreshToken: string;
 }
 
 export default class AuthController {
   constructor(private _userRepo: IUserRepo) {}
 
   public async signupController(req: Request, res: Response): Promise<void> {
-    console.log(req.cookies);
-
     const username: string = req.body.username;
     const password: string = req.body.password;
-
-    console.log(req.cookies);
 
     if (await this._userRepo.findByUsername(username)) {
       res.sendStatus(409);
@@ -42,14 +39,15 @@ export default class AuthController {
     const refreshToken = getRefreshToken(result);
     const accessToken = (await getAccessToken(refreshToken)) as string;
 
-    res
-      .status(200)
-      .json({ username, accessToken, id: result._id } as AuthResponse);
+    res.status(200).json({
+      id: result._id,
+      username,
+      accessToken,
+      refreshToken,
+    } as AuthResponse);
   }
 
   public async loginController(req: Request, res: Response): Promise<void> {
-    console.log(req.cookies);
-
     const username: string = req.body.username;
     const password: string = req.body.password;
 
@@ -66,10 +64,12 @@ export default class AuthController {
       const refreshToken = getRefreshToken(user);
       const accessToken = await getAccessToken(refreshToken);
 
-      res
-        .status(200)
-        .cookie("refreshToken", refreshToken, { httpOnly: true })
-        .json({ id: user._id, username, accessToken } as AuthResponse);
+      res.status(200).json({
+        id: user._id,
+        username,
+        accessToken,
+        refreshToken,
+      } as AuthResponse);
       return;
     }
   }
@@ -101,9 +101,7 @@ export default class AuthController {
     req: Request,
     res: Response
   ): Promise<void> {
-    console.log("cookies: ", req.cookies);
-
-    const refreshToken: string = req.cookies.refreshToken;
+    const refreshToken = req.get("Authorization")?.split(" ")[1];
     if (!refreshToken) {
       res.sendStatus(400);
       return;
@@ -115,12 +113,7 @@ export default class AuthController {
       return;
     }
 
-    res
-      .status(200)
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-      })
-      .json({ accessToken });
+    res.status(200).json({ accessToken });
   }
 
   private verifyAccessToken(token: string): Promise<DecodedPayload | null> {
@@ -157,6 +150,7 @@ export function getAccessToken(refreshToken: string): Promise<string | null> {
       process.env.REFRESH_TOKEN_SECRET as string,
       (err, decode) => {
         if (err || !decode) {
+          console.error(err, decode);
           return resolve(null);
         }
 

@@ -1,0 +1,34 @@
+@page "/md-page"
+<div class="col-md-12">
+    <MarkdownEditor @bind-Value="markdownValue" @ref=MdEditorRef @bind-ValueHTML="markdownHtml" LineNumbers=true/>
+
+    <hr />
+
+    <h3>Result</h3>
+    @((MarkupString)markdownHtml)
+
+</div>
+
+@code
+{
+    string markdownValue = "# Markdown Editor\n**This is a test**";
+    string markdownHtml;
+
+    MarkdownEditor MdEditorRef { get; set; }
+
+    Task OnMarkdownValueChanged(string value)
+    {
+        return Task.CompletedTask;
+    }
+
+    Task OnMarkdownValueHTMLChanged(string value)
+    {
+        markdownHtml = value;
+        return Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await MdEditorRef.TogglePreviewAsync();
+    }
+}

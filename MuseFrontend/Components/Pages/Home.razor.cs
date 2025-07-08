@@ -6,6 +6,8 @@ namespace MuseFrontend.Components.Pages;
 
 public partial class Home
 {
+    private string? _mdValue = default;
+
     private bool _isAuthenticated = true;
 
     [Inject]
@@ -14,14 +16,12 @@ public partial class Home
     [Inject]
     private NavigationManager Navigation { get; set; } = default!;
 
-    string _markdownValue = "# EasyMDE \n Go ahead, play around with the editor! Be sure to check out **bold**, *italic*, [links](https://google.com) and all the other features. You can type the Markdown syntax, use the toolbar, or use shortcuts like `ctrl-b` or `cmd-b`.";
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         _isAuthenticated = await ApiService.AuthService.IsAuthenticated();
         if (!_isAuthenticated)
@@ -30,10 +30,8 @@ public partial class Home
         }
     }
 
-    Task OnMarkdownValueChanged(string value)
+    private async Task NewPostHandler()
     {
-        _markdownValue = value;
 
-        return Task.CompletedTask;
     }
 }
