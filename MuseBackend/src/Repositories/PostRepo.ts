@@ -12,7 +12,8 @@ export interface IPostRepo {
   createPost(post: Post): Promise<Post | null>;
   savePost(post: Post): Promise<Post | null>;
   findById(id: string): Promise<Post | null>;
-  findByUsername(usernmae: string): Promise<Post[] | null>;
+  findByUsername(username: string): Promise<Post | null>;
+  findAllByUserid(userid: string): Promise<Post[] | null>;
 }
 
 export class MongoPostRepo implements IPostRepo {
@@ -60,8 +61,13 @@ export class MongoPostRepo implements IPostRepo {
     return post;
   }
 
-  public async findByUsername(username: string): Promise<Post[] | null> {
-    const posts = await this._Model.find({ username }).exec();
+  public async findByUsername(username: string): Promise<Post | null> {
+    const post = await this._Model.findOne({ username }).exec();
+    return post;
+  }
+
+  public async findAllByUserid(userid: string): Promise<Post[] | null> {
+    const posts = await this._Model.find({ userid }).exec();
     return posts;
   }
 }

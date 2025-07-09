@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { IUserRepo, User } from "../Repositories/UserRepo.js";
 import { Types } from "mongoose";
 
-interface DecodedPayload {
+export interface DecodedPayload {
   username: string;
   id: string;
 }
@@ -19,7 +19,7 @@ interface AuthResponse {
 export default class AuthController {
   constructor(private _userRepo: IUserRepo) {}
 
-  public async signupController(req: Request, res: Response): Promise<void> {
+  public async signup(req: Request, res: Response): Promise<void> {
     const username: string = req.body.username;
     const password: string = req.body.password;
 
@@ -47,7 +47,7 @@ export default class AuthController {
     } as AuthResponse);
   }
 
-  public async loginController(req: Request, res: Response): Promise<void> {
+  public async login(req: Request, res: Response): Promise<void> {
     const username: string = req.body.username;
     const password: string = req.body.password;
 
@@ -74,9 +74,9 @@ export default class AuthController {
     }
   }
 
-  public async userInfoController(req: Request, res: Response): Promise<void> {
+  public async getUserInfo(req: Request, res: Response): Promise<void> {
     console.log(req.get("Authentication"));
-    const accessToken = req.get("Authentication")?.split(" ")[1];
+    const accessToken = req.get("Authorization")?.split(" ")[1];
     if (!accessToken) {
       res.sendStatus(400);
       return;
@@ -97,10 +97,7 @@ export default class AuthController {
     res.status(200).json({ username: user.username });
   }
 
-  public async accessTokenController(
-    req: Request,
-    res: Response
-  ): Promise<void> {
+  public async generateAccessToken(req: Request, res: Response): Promise<void> {
     const refreshToken = req.get("Authorization")?.split(" ")[1];
     if (!refreshToken) {
       res.sendStatus(400);

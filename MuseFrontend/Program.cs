@@ -8,13 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services
-    .AddScoped<ApiService>();
-
-builder.Services.AddHttpClient<AuthService>(client =>
+builder.Services.AddHttpClient("MuseHttpClient", httpClient =>
 {
-    client.BaseAddress = new Uri("http://localhost:4321");
+    httpClient.BaseAddress = new Uri("http://localhost:4321/");
 });
+builder.Services
+    .AddScoped<ApiService>()
+    .AddScoped<AuthService>()
+    .AddScoped<ContentService>();
 
 var app = builder.Build();
 

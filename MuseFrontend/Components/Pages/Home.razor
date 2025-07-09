@@ -13,11 +13,11 @@
         <!-- Main Content -->
         <main class="flex-1 overflow-hidden relative z-10">
             <div class="h-full grid grid-rows-[auto_1fr]">
-                <Header />
+                <Header BtnText="✨ new post" ClickHandler=@NewPostHandler />
                 
                 <!-- Content Area -->
                 <div class="flex-1 overflow-y-auto">
-                    <div class="max-w-auto mx-auto px-4 py-8 lg:px-8">
+                    <div class="max-w-auto mx-auto px-4 py-8 lg:px-8"> 
                         <!-- Featured Post -->
                         <div class="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl mb-8 overflow-hidden p-8">
                             <div class="flex items-center justify-between mb-6">
@@ -32,9 +32,9 @@
                                 </div>
                             </div>
                             
-                            <MdEditor MdValue="@_mdValue" />
+                            <MarkdownEditor @bind-Value="_mdValue" />
+                            <br />_mdValue: @_mdValue
                         </div>
-
                     </div>
                 </div> <!-- Content Area -->
 

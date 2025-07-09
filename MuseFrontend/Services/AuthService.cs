@@ -10,26 +10,28 @@ namespace MuseFrontend.Services;
 
 public class AuthService
 {
-    private HttpClient _http = default!;
+    private IHttpClientFactory _httpClientFactory = default!;
 
     private ProtectedLocalStorage _localStorage = default!;
 
     private IJSRuntime _jsRuntime = default!;
 
     public AuthService(
-        HttpClient http,
+        IHttpClientFactory httpClientFactory,
         ProtectedLocalStorage localStorage,
         IJSRuntime jsRuntime
     )
     {
-        _http = http;
+        _httpClientFactory = httpClientFactory;
         _localStorage = localStorage;
         _jsRuntime = jsRuntime;
     }
 
     public async Task<bool> SignupUser(AuthUser authUser)
     {
-        var response = await _http.PostAsync(
+        var httpClient = _httpClientFactory.CreateClient("MuseHttpClient");        
+
+        var response = await httpClient.PostAsync(
             "/auth/signup",
             JsonContent.Create(authUser, null, JsonSerializerOptions.Web)
         );
@@ -70,7 +72,9 @@ public class AuthService
 
     public async Task<bool> LoginUser(AuthUser authUser)
     {
-        var response = await _http.PostAsync(
+        var httpClient = _httpClientFactory.CreateClient("MuseHttpClient");
+
+        var response = await httpClient.PostAsync(
             "/auth/login",
             JsonContent.Create(authUser, null, JsonSerializerOptions.Web)
         );
@@ -120,8 +124,10 @@ public class AuthService
             return null;
         }
 
-        _http.DefaultRequestHeaders.Add("Authentication", $"Bearer {token.Value}");
-        var response = await _http.GetAsync("/auth/user");
+        var httpClient = _httpClientFactory.CreateClient("MuseHttpClient");
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.Value}");
+
+        var response = await httpClient.GetAsync("/auth/user");
         if (!response.IsSuccessStatusCode)
         {
             Console.Error.WriteLine("Couldn't fetch user details");
@@ -152,9 +158,11 @@ public class AuthService
         if (!refreshToken.Success) return false;
 
         Console.WriteLine("refreshToken: {0}", refreshToken.Value);
-        _http.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken.Value}");
 
-        var response = await _http.GetAsync("/auth/access-token");
+        var httpClient = _httpClientFactory.CreateClient("MuseHttpClient");
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {refreshToken.Value}");
+
+        var response = await httpClient.GetAsync("/auth/access-token");
         if (response.StatusCode == HttpStatusCode.Forbidden)
         {
             await _jsRuntime.InvokeVoidAsync("alert", "Couldn't generate new access token");

@@ -29,6 +29,6 @@ public partial class Login
         if (isAuth) Navigation.NavigateTo("/");
     }
 
-    private void GoToSignup(MouseEventArgs e) => Navigation.NavigateTo("/auth/login");
+    private void GoToSignup(MouseEventArgs e) => Navigation.NavigateTo("/auth/signup");
 
 }
