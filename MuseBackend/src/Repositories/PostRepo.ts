@@ -6,6 +6,7 @@ export interface Post {
   userid: string;
   username: string;
   content: string;
+  contentHtml: string;
 }
 
 export interface IPostRepo {
@@ -14,6 +15,7 @@ export interface IPostRepo {
   findById(id: string): Promise<Post | null>;
   findByUsername(username: string): Promise<Post | null>;
   findAllByUserid(userid: string): Promise<Post[] | null>;
+  deletePost(id: string): Promise<boolean>;
 }
 
 export class MongoPostRepo implements IPostRepo {
@@ -26,6 +28,7 @@ export class MongoPostRepo implements IPostRepo {
       userid: { type: String, required: true },
       username: { type: String, required: true },
       content: { type: String, required: true },
+      contentHtml: { type: String, required: true },
     });
     this._Model = model<Post>("Post", this._schema);
     this.connectToDb();
@@ -69,5 +72,11 @@ export class MongoPostRepo implements IPostRepo {
   public async findAllByUserid(userid: string): Promise<Post[] | null> {
     const posts = await this._Model.find({ userid }).exec();
     return posts;
+  }
+
+  public async deletePost(id: string): Promise<boolean> {
+    var response = await this._Model.findByIdAndDelete(id).exec();
+    if (!response) return false;
+    return true;
   }
 }

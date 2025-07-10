@@ -35,6 +35,7 @@ public class ContentService
         if (!await _authService.IsAuthenticated()) return null;
         var accessToken = await _localStorage.GetAsync<string>("accessToken");
 
+        Console.WriteLine(post);
         httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.Value}");
         var response = await httpClient.PostAsync(
             "/content/create",
@@ -52,6 +53,7 @@ public class ContentService
         {
             await _jsRuntime.InvokeVoidAsync("alert", "Error parsing ill formed response object");
         }
+        await _jsRuntime.InvokeVoidAsync("alert", "Post created successfully");
         return postJson;
     }
 
@@ -76,7 +78,26 @@ public class ContentService
         {
             await _jsRuntime.InvokeVoidAsync("alert, Error parsing ill formed response object");
         }
-        Console.WriteLine(postsJson[0]);
         return postsJson;
+    }
+
+    public async Task<bool> DeletePost(string id)
+    {
+        var httpClient = _httpClientFactory.CreateClient("MuseHttpClient");
+
+        if (!await _authService.IsAuthenticated()) return false;
+        var accessToken = await _localStorage.GetAsync<string>("accessToken");
+
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.Value}");
+        var response = await httpClient.DeleteAsync($"/content/{id}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            await _jsRuntime.InvokeVoidAsync("alert", "Error deleting post");
+            return false;
+        }
+
+        await _jsRuntime.InvokeVoidAsync("alert", "Post deleted successfully");
+        return true;
     }
 }

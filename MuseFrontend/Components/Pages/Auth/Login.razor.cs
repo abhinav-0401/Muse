@@ -23,7 +23,7 @@ public partial class Login
         Navigation.NavigateTo("/");
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
         var isAuth = await ApiService.AuthService.IsAuthenticated();
         if (isAuth) Navigation.NavigateTo("/");

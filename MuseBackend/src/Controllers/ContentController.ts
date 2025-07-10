@@ -23,9 +23,12 @@ export default class ContentController {
 
     let post: Post | null = {
       content: req.body.content as string,
+      contentHtml: req.body.contentHtml as string,
       userid: decoded.id,
       username: decoded.username,
     };
+
+    console.log("createPost obj", post);
 
     post = await this._postRepo.createPost(post);
     if (!post) {
@@ -61,10 +64,30 @@ export default class ContentController {
         username: post.username,
         userid: post.userid,
         content: post.content,
+        contentHtml: post.contentHtml,
       };
     });
     console.log("posts", posts);
     res.json(posts);
+  }
+
+  public async deletePost(req: Request, res: Response) {
+    console.log("delete post");
+    const accessToken = req.get("Authorization")?.split(" ")[1];
+    if (!accessToken) {
+      res.sendStatus(400);
+      return;
+    }
+
+    const decoded = await this.verifyAccessToken(accessToken);
+    if (!decoded) {
+      res.sendStatus(400);
+      return;
+    }
+
+    console.log("postId", req.params.id);
+    const response = this._postRepo.deletePost(req.params.id);
+    res.json(response);
   }
 
   private verifyAccessToken(token: string): Promise<DecodedPayload | null> {

@@ -21,13 +21,20 @@
 
                         @if (_posts is null || _posts.Count == 0)
                         {
-                            <PostCard Content="No Posts Yet" Username="MUSE"/>
+                            <PostCard Content="No Posts Yet" Username="MUSE" ReadOnly=@true />
                         }
                         else
                         {
                             foreach (var post in _posts)
                             {
-                                <PostCard Content=@post.Content Userid=@post.Userid Username=@post.Username />
+                                <PostCard
+                                    Id=@post.Id
+                                    Content=@post.Content
+                                    ContentHtml=@post.ContentHtml
+                                    Userid=@post.Userid
+                                    Username=@post.Username
+                                    DeleteHandler=@((MouseEventArgs _) => DeletePostHandler(post))
+                                />
                             }
                         }
 

@@ -1,5 +1,7 @@
+@using MuseFrontend.Services
+@inject ApiService ApiService
 
-<!-- Featured Post --> <div class="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl mb-8 overflow-hidden p-8">
+<div class="bg-white/20 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl mb-8 overflow-hidden p-8">
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center space-x-4">
             <div class="w-12 h-12 bg-linear-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center shadow-lg">
@@ -10,9 +12,18 @@
                 <p class="text-white/60 text-sm">@Userid</p>
             </div>
         </div>
+        @if (!ReadOnly)
+        {
+            <div>
+                <BtnSecondary Text="🗑️" OnClick=@DeleteHandler />
+            </div>
+        }
     </div>
     
-    <br /> @((MarkupString)Content)
+    <br />
+    <p class="prose">
+        @((MarkupString)ContentHtml)
+    </p>
 </div>
 
 @code
@@ -21,8 +32,20 @@
     public string Content { get; set; } = "";
 
     [Parameter]
+    public string ContentHtml { get; set; } = "";
+
+    [Parameter]
     public string Username { get; set; } = "";
 
     [Parameter]
     public string Userid { get; set; } = "";
+
+    [Parameter]
+    public string Id { get; set; } = "";
+
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> DeleteHandler { get; set; }
 }

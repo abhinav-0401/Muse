@@ -9,6 +9,8 @@ public partial class Home
 {
     private string? _mdValue = default;
 
+    private string? _mdValueHtml = default;
+
     private bool _isAuthenticated = true;
 
     [Inject]
@@ -25,7 +27,7 @@ public partial class Home
         base.OnInitialized();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
         _isAuthenticated = await ApiService.AuthService.IsAuthenticated();
         if (!_isAuthenticated)
@@ -41,9 +43,10 @@ public partial class Home
             await JsRuntime.InvokeVoidAsync("alert", "Nothing to post yet!");
             return;
         }
-        var post = new Post(Content: _mdValue, Id: null, Userid: null, Username: null);
+        var post = new Post(Content: _mdValue, ContentHtml: _mdValueHtml!, Id: null, Userid: null, Username: null);
         post = await ApiService.ContentService.CreatePost(post);
         if (post is null) return;
+        _mdValue = "";
         Console.WriteLine("Post is: {0}", post);
     }
 }

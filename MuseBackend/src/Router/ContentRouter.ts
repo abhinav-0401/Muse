@@ -11,5 +11,8 @@ contentRouter.post("/content/create", (req, res) =>
 contentRouter.get("/content/all", (req, res) =>
   contentController.getAllPosts(req, res)
 );
+contentRouter.delete("/content/:id", (req, res) =>
+  contentController.deletePost(req, res)
+);
 
 export default contentRouter;

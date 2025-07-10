@@ -1,4 +1,5 @@
 ﻿@page "/"
+@page "/create"
 
 <PageTitle>Home</PageTitle>
 
@@ -32,8 +33,7 @@
                                 </div>
                             </div>
                             
-                            <MarkdownEditor @bind-Value="_mdValue" />
-                            <br />_mdValue: @_mdValue
+                            <MarkdownEditor @bind-Value="_mdValue" @bind-ValueHTML="_mdValueHtml" />
                         </div>
                     </div>
                 </div> <!-- Content Area -->
