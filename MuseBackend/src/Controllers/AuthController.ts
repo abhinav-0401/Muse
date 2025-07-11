@@ -94,7 +94,7 @@ export default class AuthController {
       return;
     }
 
-    res.status(200).json({ username: user.username });
+    res.status(200).json({ username: user.username, id: user._id });
   }
 
   public async generateAccessToken(req: Request, res: Response): Promise<void> {

@@ -115,7 +115,7 @@ public class AuthService
         return true;
     }
 
-    public async Task<User?> GetUserInfoAsync()
+    public async Task<UserInfo?> GetUserInfoAsync()
     {
         var token = await _localStorage.GetAsync<string>("accessToken");
         if (!token.Success)
@@ -136,7 +136,7 @@ public class AuthService
 
         var strUser = await response.Content.ReadAsStringAsync();
         Console.WriteLine("string user GetUserInfoAsync(): {0}", strUser);
-        var user = await response.Content.ReadFromJsonAsync<User>();
+        var user = await response.Content.ReadFromJsonAsync<UserInfo>();
         return user;
     }
 
@@ -198,7 +198,7 @@ public class AuthService
         return false;
     }
 
-    private bool CheckAccessTokenPayload(string token, User user)
+    private bool CheckAccessTokenPayload(string token, UserInfo user)
     {
         var handler = new JwtSecurityTokenHandler();
 

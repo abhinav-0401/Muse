@@ -1,10 +1,14 @@
 @using MuseFrontend.Models
 @using MuseFrontend.Services
 @inject ApiService ApiService
+@inject NavigationManager Navigation
 
 <!-- User Profile -->
 <div class="p-4 border-t border-white/20">
-    <div class="flex items-center space-x-3 px-4 py-3 bg-white/10 rounded-xl">
+    <div 
+        class="flex items-center space-x-3 px-4 py-3 bg-white/10 cursor-pointer rounded-xl"
+        @onclick="@((MouseEventArgs _) => Navigation.NavigateTo("/me"))"
+    >
         <div class="w-10 h-10 bg-linear-to-br from-pink-400 to-purple-400 rounded-full flex items-center justify-center">
             <span class="text-white font-medium text-sm">
                 @(_user is null ? "M" : _user.Username.Substring(0, 2).ToUpper())
@@ -12,14 +16,14 @@
         </div>
         <div>
             <p class="text-white font-medium text-sm">@(_user is null ? "Guest" : _user.Username)</p>
-            <p class="text-white/60 text-xs">@(_user is null ? "Guest" : _user.Username)</p>
+            <p class="text-white/60 text-xs">@(_user is null ? "Guest" : _user.Id)</p>
         </div>
     </div>
 </div>
 
 @code
 {
-    private User? _user = default;
+    private UserInfo? _user = default;
 
     protected override async Task OnInitializedAsync()
     {

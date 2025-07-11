@@ -4,11 +4,11 @@ using MuseFrontend.Services;
 
 namespace MuseFrontend.Components.Pages;
 
-public partial class Feed
+public partial class UserDetails
 {
     private bool _isAuthenticated = false;
 
-    private List<Post>? _posts = null;
+    private UserInfo? _user = null;
 
     [Inject]
     private ApiService ApiService { get; set; } = default!;
@@ -24,6 +24,6 @@ public partial class Feed
             Navigation.NavigateTo("/auth/login");
             return;
         }
-        _posts = await ApiService.ContentService.GetAllPosts();
+        _user = await ApiService.AuthService.GetUserInfoAsync();
     }
 }
