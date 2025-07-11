@@ -57,6 +57,30 @@ public class ContentService
         return postJson;
     }
 
+    public async Task<List<Post>?> GetUserPosts()
+    {
+        var httpClient = _httpClientFactory.CreateClient("MuseHttpClient");
+
+        if (!await _authService.IsAuthenticated()) return null;
+        var accessToken = await _localStorage.GetAsync<string>("accessToken");
+
+        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {accessToken.Value}");
+        var response = await httpClient.GetAsync("/content/my");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            await _jsRuntime.InvokeVoidAsync("alert", "Couldn't fetch user's posts");
+            return null;
+        }
+
+        var postsJson = await response.Content.ReadFromJsonAsync<List<Post>>();
+        if (postsJson is null)
+        {
+            await _jsRuntime.InvokeVoidAsync("alert, Error parsing ill formed response object");
+        }
+        return postsJson;
+    }
+
     public async Task<List<Post>?> GetAllPosts()
     {
         var httpClient = _httpClientFactory.CreateClient("MuseHttpClient");
@@ -69,14 +93,13 @@ public class ContentService
 
         if (!response.IsSuccessStatusCode)
         {
-            await _jsRuntime.InvokeVoidAsync("alert", "Couldn't fetch user's posts");
+            await _jsRuntime.InvokeVoidAsync("alert", "Couldn't fetch all the posts");
             return null;
         }
-
         var postsJson = await response.Content.ReadFromJsonAsync<List<Post>>();
         if (postsJson is null)
         {
-            await _jsRuntime.InvokeVoidAsync("alert, Error parsing ill formed response object");
+            await _jsRuntime.InvokeVoidAsync("alert", "Error parsing ill formed posts object");
         }
         return postsJson;
     }

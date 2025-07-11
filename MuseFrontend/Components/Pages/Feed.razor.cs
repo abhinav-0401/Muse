@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.JSInterop;
 using MuseFrontend.Models;
 using MuseFrontend.Services;
 
 namespace MuseFrontend.Components.Pages;
 
-public partial class AllPosts
+public partial class Feed
 {
     private bool _isAuthenticated = false;
 
@@ -29,12 +27,4 @@ public partial class AllPosts
         }
         _posts = await ApiService.ContentService.GetAllPosts();
     }
-
-    private async Task DeletePostHandler(Post post)
-    {
-        Console.WriteLine("post in postcard: {0}", post.Id);
-        await ApiService.ContentService.DeletePost(post.Id!);
-        _posts = await ApiService.ContentService.GetAllPosts();
-    }
 }
-

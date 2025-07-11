@@ -8,6 +8,9 @@ const contentController = new ContentController(new MongoPostRepo());
 contentRouter.post("/content/create", (req, res) =>
   contentController.createPost(req, res)
 );
+contentRouter.get("/content/my", (req, res) =>
+  contentController.getUserPosts(req, res)
+);
 contentRouter.get("/content/all", (req, res) =>
   contentController.getAllPosts(req, res)
 );

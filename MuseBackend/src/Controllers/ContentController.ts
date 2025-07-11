@@ -13,8 +13,6 @@ export default class ContentController {
       return;
     }
 
-    console.log("createPost: ", accessToken);
-
     const decoded = await this.verifyAccessToken(accessToken);
     if (!decoded) {
       res.sendStatus(400);
@@ -28,19 +26,16 @@ export default class ContentController {
       username: decoded.username,
     };
 
-    console.log("createPost obj", post);
-
     post = await this._postRepo.createPost(post);
     if (!post) {
       res.status(500).send("couldn't create post");
       return;
     }
 
-    console.log("Post created: ", post);
     res.status(200).json(post);
   }
 
-  public async getAllPosts(req: Request, res: Response) {
+  public async getUserPosts(req: Request, res: Response) {
     const accessToken = req.get("Authorization")?.split(" ")[1];
     if (!accessToken) {
       res.sendStatus(400);
@@ -67,12 +62,10 @@ export default class ContentController {
         contentHtml: post.contentHtml,
       };
     });
-    console.log("posts", posts);
     res.json(posts);
   }
 
-  public async deletePost(req: Request, res: Response) {
-    console.log("delete post");
+  public async getAllPosts(req: Request, res: Response) {
     const accessToken = req.get("Authorization")?.split(" ")[1];
     if (!accessToken) {
       res.sendStatus(400);
@@ -85,7 +78,23 @@ export default class ContentController {
       return;
     }
 
-    console.log("postId", req.params.id);
+    const posts = await this._postRepo.findAll();
+    res.json(posts);
+  }
+
+  public async deletePost(req: Request, res: Response) {
+    const accessToken = req.get("Authorization")?.split(" ")[1];
+    if (!accessToken) {
+      res.sendStatus(400);
+      return;
+    }
+
+    const decoded = await this.verifyAccessToken(accessToken);
+    if (!decoded) {
+      res.sendStatus(400);
+      return;
+    }
+
     const response = this._postRepo.deletePost(req.params.id);
     res.json(response);
   }
