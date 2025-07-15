@@ -43,9 +43,9 @@
 
 <details>
   <summary>The title of the image group</summary>
-  <img src="https://drive.google.com/file/d/1ZU9nNEoac4l4rsTfHlG7ftZE8Z0GabC2/view?usp=sharing" alt="image-description"/>
-  <img src="https://drive.google.com/file/d/12g_FGUX0yNxPz55VertHehqBljm-5tQZ/view?usp=share_link" alt="image-description"/>
-  <img src="https://drive.google.com/file/d/12g_FGUX0yNxPz55VertHehqBljm-5tQZ/view?usp=share_link" alt="image-description"/>
+  <img src="./Img/one.png" alt="image-description"/>
+  <img src="./Img/two.png" alt="image-description"/>
+  <img src="./Img/three.png" alt="image-description"/>
 </details>
 
 ---
