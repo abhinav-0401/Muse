@@ -6,14 +6,15 @@
 ## Table of Contents
 
 1. [Key Features](#key-features)
-2. [Roadmap](#roadmap)
-3. [Tech Stack](#tech-stack)
-4. [Repository Structure](#repository-structure)
-5. [Getting Started](#getting-started)
+2. [View Screenshots](#screenshots)
+3. [Roadmap](#roadmap)
+4. [Tech Stack](#tech-stack)
+5. [Repository Structure](#repository-structure)
+6. [Getting Started](#getting-started)
    1. [Prerequisites](#prerequisites)
    2. [Local development](#local-development)
-6. [Configuration](#configuration)
-7. [Code Style & Conventions](#code-style--conventions)
+7. [Configuration](#configuration)
+8. [Code Style & Conventions](#code-style--conventions)
 
 ---
 
@@ -35,6 +36,17 @@
 
 - The Frontend is hosted on [azure webapps](https://muse-frontend.azurewebsites.net/).
 - The Backend is hosted on [render](https://muse-0f55.onrender.com/).
+
+---
+
+## Screenshots
+
+<details>
+  <summary>The title of the image group</summary>
+  <img src="https://drive.google.com/file/d/1ZU9nNEoac4l4rsTfHlG7ftZE8Z0GabC2/view?usp=sharing" alt="image-description"/>
+  <img src="https://drive.google.com/file/d/12g_FGUX0yNxPz55VertHehqBljm-5tQZ/view?usp=share_link" alt="image-description"/>
+  <img src="https://drive.google.com/file/d/12g_FGUX0yNxPz55VertHehqBljm-5tQZ/view?usp=share_link" alt="image-description"/>
+</details>
 
 ---
 
