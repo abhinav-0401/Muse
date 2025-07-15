@@ -21,10 +21,10 @@
 
 | Status | Feature                                                              |
 | ------ | -------------------------------------------------------------------- |
-| ✅      | **Authentication:** Sign‑up / log‑in with username + password        |
-| ✅      | **Rich Markdown editor:** Real‑time preview with rich‑text shortcuts      |
-| ✅      | **Beautiful, Responsive UI:** Mobile‑first layouts, TailwindCSS                 |
-| ✅      | **Feed views:** All‑posts & per‑user feeds, Markdown → HTML renderer |
+| ✅      | **Authentication:** Sign‑up / log‑in with username + password       |
+| ✅      | **Rich Markdown editor:** Real‑time preview with rich‑text shortcuts|
+| ✅      | **Beautiful, Responsive UI:** Mobile‑first layouts, TailwindCSS     |
+| ✅      | **Feed views**: All‑posts & per‑user feeds, Markdown → HTML renderer|
 | 🔄     | **Gemini integration:** AI‑powered note assistance                   |
 | 🔄     | **Profile editing:** Update bio, avatar, preferences                 |
 | 🔄     | **Enhanced sign‑up:** Collect additional profile fields              |
@@ -34,7 +34,7 @@
 > **Version v0.1** is considered a *beta* release. Expect breaking changes until v1.0.
 
 - The Frontend is hosted on [azure webapps](https://muse-frontend.azurewebsites.net/).
-- The Backeend is hosted on [render](https://muse-0f55.onrender.com/).
+- The Backend is hosted on [render](https://muse-0f55.onrender.com/).
 
 ---
 
