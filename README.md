@@ -6,7 +6,7 @@
 ## Table of Contents
 
 1. [Key Features](#key-features)
-2. [View Screenshots](#screenshots)
+2. [View Screenshots](#view-screenshots)
 3. [Roadmap](#roadmap)
 4. [Tech Stack](#tech-stack)
 5. [Repository Structure](#repository-structure)
@@ -22,10 +22,10 @@
 
 | Status | Feature                                                              |
 | ------ | -------------------------------------------------------------------- |
-| ✅      | **Authentication:** Sign‑up / log‑in with username + password       |
-| ✅      | **Rich Markdown editor:** Real‑time preview with rich‑text shortcuts|
-| ✅      | **Beautiful, Responsive UI:** Mobile‑first layouts, TailwindCSS     |
-| ✅      | **Feed views**: All‑posts & per‑user feeds, Markdown → HTML renderer|
+| ✅     | **Authentication:** Sign‑up / log‑in with username + password       |
+| ✅     | **Rich Markdown editor:** Real‑time preview with rich‑text shortcuts|
+| ✅     | **Beautiful, Responsive UI:** Mobile‑first layouts, TailwindCSS     |
+| ✅     | **Feed views**: All‑posts & per‑user feeds, Markdown → HTML renderer|
 | 🔄     | **Gemini integration:** AI‑powered note assistance                   |
 | 🔄     | **Profile editing:** Update bio, avatar, preferences                 |
 | 🔄     | **Enhanced sign‑up:** Collect additional profile fields              |
@@ -42,10 +42,10 @@
 ## Screenshots
 
 <details>
-  <summary>The title of the image group</summary>
-  <img src="./Img/one.png" alt="image-description"/>
-  <img src="./Img/two.png" alt="image-description"/>
-  <img src="./Img/three.png" alt="image-description"/>
+  <summary><em><strong>Click here to view screenshots</strong></em></summary>
+  <img src="./Img/one.png" alt="User Posts"/>
+  <img src="./Img/two.png" alt="User's Feed"/>
+  <img src="./Img/three.png" alt="Rich Markdown Text Editor"/>
 </details>
 
 ---
