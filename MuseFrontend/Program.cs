@@ -10,7 +10,11 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpClient("MuseHttpClient", httpClient =>
 {
+#if DEBUG
     httpClient.BaseAddress = new Uri("http://localhost:4321/");
+#else
+    httpClient.BaseAddress = new Uri("http://localhost:4321/");
+#endif
 });
 builder.Services
     .AddScoped<ApiService>()

@@ -14,6 +14,6 @@ const PORT_NUMBER = 4321;
 
 assignRoutes(app);
 
-app.listen(PORT_NUMBER, "localhost", () => {
+app.listen(PORT_NUMBER, () => {
   console.log("the server's up and running, savvy?");
 });
