@@ -13,7 +13,7 @@ builder.Services.AddHttpClient("MuseHttpClient", httpClient =>
 #if DEBUG
     httpClient.BaseAddress = new Uri("http://localhost:4321/");
 #else
-    httpClient.BaseAddress = new Uri("http://localhost:4321/");
+    httpClient.BaseAddress = new Uri("https://muse-0f55.onrender.com");
 #endif
 });
 builder.Services
