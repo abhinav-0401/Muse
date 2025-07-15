@@ -10,15 +10,10 @@
 3. [Tech Stack](#tech-stack)
 4. [Repository Structure](#repository-structure)
 5. [Getting Started](#getting-started)
-
    1. [Prerequisites](#prerequisites)
    2. [Local development](#local-development)
-   3. [Production build](#production-build)
 6. [Configuration](#configuration)
 7. [Code Style & Conventions](#code-style--conventions)
-8. [Contributing](#contributing)
-9. [License](#license)
-10. [Acknowledgements](#acknowledgements)
 
 ---
 
@@ -37,6 +32,9 @@
 | 🔄     | **Database switch:** Migrating MongoDB → PostgreSQL                  |
 
 > **Version v0.1** is considered a *beta* release. Expect breaking changes until v1.0.
+
+- The Frontend is hosted on [azure webapps](https://muse-frontend.azurewebsites.net/).
+- The Backeend is hosted on [render](https://muse-0f55.onrender.com/).
 
 ---
 
