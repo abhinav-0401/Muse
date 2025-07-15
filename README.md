@@ -97,7 +97,6 @@ Muse/
 
 * **.NET 9 SDK** (or newer) → [https://dotnet.microsoft.com/download](https://dotnet.microsoft.com/download)
 * **Node.js 22+** & **npm 10+** → [https://nodejs.org](https://nodejs.org)
-* **MongoDB** (or Docker) for local data
 * **Git**
 
 ### Local Development
@@ -117,7 +116,7 @@ $ npm i
 $ npx tsc
 $ npm dist/Main.js      # starts the backend on port 4321
 
-# 4 / Frontend (new terminal)
+# 4 / Fronten
 $ cd ../MuseFrontend
 $ dotnet watch                    # hot‑reload on :5076
 
