@@ -7,8 +7,6 @@ on:
   push:
     branches:
       - main
-    paths:                                    # ← ADDED
-      - 'MuseFrontend/**'                    # ← ADDED: Only trigger when MuseFrontend folder changes
   workflow_dispatch:
 
 jobs:
@@ -27,11 +25,9 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
-        working-directory: ./MuseFrontend    # ← ADDED: Run build in MuseFrontend folder
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
-        working-directory: ./MuseFrontend    # ← ADDED: Run publish in MuseFrontend folder
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -56,9 +52,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.__clientidsecretname__ }}
-          tenant-id: ${{ secrets.__tenantidsecretname__ }}
-          subscription-id: ${{ secrets.__subscriptionidsecretname__ }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FF62BE1A8A8144B09B319361D532B758 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_752368CF3CDB4F16B33B8B6A952F17D2 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1DC3B20DB0D041CC869C735AAC1BF96B }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -67,3 +63,4 @@ jobs:
           app-name: 'muse-frontend'
           slot-name: 'Production'
           package: .
+          
