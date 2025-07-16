@@ -66,7 +66,7 @@
 | Frontend           | Blazor Server (.NET 9)                                                        |
 | Backend API        | Node.js 22, Express 5, TypeScript                                             |
 | Database (current) | MongoDB Atlas                                                                 |
-| Incoming           | PostgreSQL w/ Prisma ORM                                                      |
+| Incoming           | PostgreSQL                                                                    |
 | Auth               | JWT + Access + Refresh tokens                                                 |
 | Dev ops            | Azure WebApps + GitHub Actions(Frontend), Render (Backend)                    |
 
@@ -79,7 +79,7 @@ Muse/
 |-- MuseBackend/                     # Node.js + Express backend
 |   |-- src/
 |   |   |-- Controllers/            # Request handlers (auth, notes, etc.)
-|   |   |-- Repositories/          # DB logic, abstracted Mongo ops (switchable to Prisma later)
+|   |   |-- Repositories/          # DB logic, abstracted Mongo ops (switchable to Postgres later)
 |   |   |-- Router/                # Combines routes + middleware per module
 |   |   |-- Main.ts                # Entry point – sets up server and middlewares
 |   |
